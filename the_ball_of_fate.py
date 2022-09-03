@@ -15,6 +15,7 @@ isFinish = 'Да'
 
 while isFinish == 'Да':
     question = input('Напишите вопрос, который вас интересует: ')
-    print(choice(answers))
+    print("Наш ответ:", choice(answers))
     print('Хотите ли вы задать вопрос еще раз?(Да)')
     isFinish = input()
+print('Возвращайся, если возникнут вопросы!')
