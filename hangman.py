@@ -1,3 +1,4 @@
+from dataclasses import replace
 from random import *
 
 word_rus = ['год', 'человек', 'время', 'дело', 'жизнь', 'день', 'рука', 'раз', 'работа', 'слово', 'место', 'лицо',
@@ -112,14 +113,12 @@ def right_input(word):
     if word.isalpha() != True:
         return False
     
-def is_not_same(arr): # abcd
-    for i in range(0, len(arr) - 1):
-        if arr[len(arr) - 1] == arr[i] or len(arr) == 0:
+def is_not_same(arr, word):
+    for i in range(len(arr)):
+        if word in arr[i]:
             return False
-    
-        
-    
-        
+        else:
+            return True       
 
 def display_hangman(tries):
     stages = [  # финальное состояние: голова, торс, обе руки, обе ноги
@@ -199,7 +198,7 @@ def display_hangman(tries):
 def play():
     
     word = get_word(word_rus)
-    word_completion = '_' * len(word) 
+    word_completion = ['_' for i in range(len(word))]
     guessed = False                   
     guessed_letters = []              
     guessed_words = []                 
@@ -207,28 +206,48 @@ def play():
     
     print('Давайте играть в угадайку слов!')
     print(display_hangman(tries))
-    print(word_completion)
-    
-
+    print(*word_completion, sep='')
     
     while tries > 0:
         
-        word_input = input("Введите букву, либо слова: ")  # alo
+        word_input = input("Введите букву, либо слова: ")
         
-        if right_input(word_input) == False:
+        while right_input(word_input) == False:
             word_input = input("Не правильные данные, введите букву, либо слова: ")
-        elif is_not_same(guessed_letters) == False:
-            word_input = input('Такое значение вы уже вводили, введите снова: ')
-            print(guessed_letters, guessed_words)
-        elif is_not_same(guessed_words) == False:  
-            word_input = input('Такое значение вы уже вводили, введите снова: ') 
-            print(guessed_letters, guessed_words)
-        else:
-            if len(word_input) == 1:
-                guessed_letters.append(word_input.lower())
-            else:
-                guessed_words.append(word_input.lower())
         
-        tries -= 1
+        while is_not_same(guessed_letters, word_input) == False or is_not_same(guessed_words, word_input) == False:
+            word_input = input('Такое слово или буквы вы уже вводили, назовите другое значение: ')
             
-play()
+        if len(word_input) == 1:
+            guessed_letters.append(word_input.lower())
+        elif len(word_input) > 1:
+            guessed_words.append(word_input.lower())  
+            
+        for i in range(len(word_input)):
+            for j in range(len(word)):
+                if word_input[i] == word[j]:
+                    guessed = True
+                    word_completion[j] = word_input[i]
+    
+        if guessed == True:
+            print(*word_completion, sep = '')
+            print('Поздравляю, вы угадали!')  
+            print(display_hangman(tries))
+                   
+        if guessed == False:
+            tries -= 1
+            print("К сожалению вы не угадали:(")
+            print(display_hangman(tries))
+            
+        guessed = False  
+    
+        if tries == 0:
+            return 0
+            
+
+isFinish = 'Н'
+
+while isFinish == 'Н':
+    play()
+    print('Хотите ли вы продолжить игру? (Y - Yes, N - No)')
+    isFinish = input()
